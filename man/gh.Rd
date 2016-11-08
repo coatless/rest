@@ -10,13 +10,23 @@ gh(endpoint, ..., .token = NULL, .api_url = NULL, .limit = NULL,
   .send_headers = NULL)
 }
 \arguments{
-\item{endpoint}{GitHub API endpoint. See examples below.}
+\item{endpoint}{GitHub API endpoint. Must be one of the following forms:
+
+   \itemize{
+     \item "METHOD path", e.g. "GET /rate_limit"
+     \item "path", e.g. "/rate_limit".
+     \item "METHOD url", e.g. "GET https://api.github.com/rate_limit"
+     \item "url", e.g. "https://api.github.com/rate_limit".
+   }
+
+   If the method is not supplied, it is assumed to be \code{GET}.}
 
 \item{...}{Additional parameters}
 
 \item{.token}{Authentication token.}
 
-\item{.api_url}{Github API url (default: \url{https://api.github.com})}
+\item{.api_url}{Github API url (default: \url{https://api.github.com}).
+Used if \code{endpoint} just contains a path.}
 
 \item{.limit}{Number of records to return. This can be used
 instead of manual pagination. By default it is \code{NULL},
