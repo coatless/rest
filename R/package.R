@@ -32,9 +32,12 @@ NULL
 #'      \item "url", e.g. "https://api.github.com/rate_limit".
 #'    }
 #'
-#'    If the method is not supplied, it is assumed to be \code{GET}.
+#'    If the method is not supplied, will use \code{.method}, which defaults
+#'    to \code{GET}.
 #' @param ... Additional parameters
 #' @param .token Authentication token.
+#' @param .method HTTP method to use if not explicitly supplied in the
+#'    \code{endpoint}.
 #' @param .api_url Github API url (default: \url{https://api.github.com}).
 #'   Used if \code{endpoint} just contains a path.
 #' @param .limit Number of records to return. This can be used
@@ -92,11 +95,13 @@ NULL
 #'
 
 gh <- function(endpoint, ..., .token = NULL,
-               .api_url = NULL, .limit = NULL, .send_headers = NULL) {
+               .api_url = NULL, .method = "GET",
+               .limit = NULL, .send_headers = NULL
+               ) {
 
   req <- gh_build_request(endpoint = endpoint, params = list(...),
                           token = .token, send_headers = .send_headers,
-                          api_url = .api_url)
+                          api_url = .api_url, method = .method)
 
   raw <- gh_make_request(req)
 
