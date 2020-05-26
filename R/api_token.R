@@ -35,7 +35,7 @@
 #'
 #' gh supports storing your PAT in the system keyring, on Windows, macOS
 #' and Linux, using the keyring package. To turn on keyring support, you
-#' need to set the `GH_KEYRING` environment variables to `true`, in your
+#' need to set the `rest_KEYRING` environment variables to `true`, in your
 #' `.Renviron` file or profile.
 #'
 #' If keyring support is turned on, then for each PAT environment variable,
@@ -90,7 +90,7 @@ api_token <- function(api_url = NULL) {
 
 should_use_keyring <- function() {
   # Opt in?
-  if (tolower(Sys.getenv("GH_KEYRING", "")) != "true") return(FALSE)
+  if (tolower(Sys.getenv("rest_KEYRING", "")) != "true") return(FALSE)
 
   # Can we load the package?
   if (!can_load("keyring")) {
@@ -142,7 +142,7 @@ get_first_token_found <- function(vars) {
   val
 }
 
-gh_auth <- function(token) {
+rest_auth <- function(token) {
   if (isTRUE(token != "")) {
     c("Authorization" = paste("token", token))
   } else {
@@ -155,7 +155,7 @@ gh_auth <- function(token) {
 #' @param url Character vector HTTP/HTTPS URLs.
 #' @return Character vector of suffixes.
 #'
-#' @seealso [gh_token()]
+#' @seealso [api_token()]
 #' @export
 #' @examples
 #' # The main GH site
