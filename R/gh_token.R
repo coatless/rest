@@ -80,7 +80,7 @@
 #' gh uses to search for API URL specific PATs.
 #' @export
 
-gh_token <- function(api_url = NULL) {
+api_token <- function(api_url = NULL) {
   api_url <- api_url %||% default_api_url()
   token_env_var <- paste0("GITHUB_PAT_", slugify_url(api_url))
   get_first_token_found(c(token_env_var, "GITHUB_PAT", "GITHUB_TOKEN"))
@@ -94,7 +94,7 @@ should_use_keyring <- function() {
 
   # Can we load the package?
   if (!can_load("keyring")) {
-    cli_alert_info("{.pkg gh}: the {.pkg keyring} package is not available")
+    cli_alert_info("{.pkg rest}: the {.pkg keyring} package is not available")
     return(FALSE)
   }
 
@@ -108,7 +108,7 @@ should_use_keyring <- function() {
 
   # Otherwise if locked, and non-interactive session, we won't use it
   if (locked && ! is_interactive()) {
-    cli_alert_info("{.pkg gh}: default keyring is locked")
+    cli_alert_info("{.pkg rest}: default keyring is locked")
     return(FALSE)
   }
 
@@ -119,7 +119,7 @@ should_use_keyring <- function() {
     err <- FALSE
     tryCatch(keyring::keyring_unlock(), error = function(e) err <- TRUE)
     if (err) {
-      cli_alert_info("{.pkg gh}: failed to unlock default keyring")
+      cli_alert_info("{.pkg rest}: failed to unlock default keyring")
       return(FALSE)
     }
   }
