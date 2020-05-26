@@ -1,5 +1,5 @@
 
-#' Print the result of a GitHub API call
+#' Print the result of an API call
 #'
 #' @param x The result object.
 #' @param ... Ignored.
@@ -7,9 +7,9 @@
 #'
 #' @importFrom jsonlite prettify toJSON
 #' @export
-#' @method print gh_response
+#' @method print rest_response
 
-print.gh_response <- function(x, ...) {
+print.rest_response <- function(x, ...) {
   if (inherits(x, c("raw", "path"))) {
     attr(x, c("method")) <- NULL
     attr(x, c("response")) <- NULL
