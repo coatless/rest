@@ -1,15 +1,15 @@
-Package: gh
-Title: 'GitHub' 'API'
+Package: rest
+Title: 'REST' 'API'
 Version: 1.1.0.9000
 Authors@R:
     c(person("Gábor", "Csárdi",, "csardi.gabor@gmail.com", c("cre", "ctb")),
       person("Jennifer", "Bryan", role = "aut"),
       person("Hadley", "Wickham", role = "aut"))
-Description: Minimal client to access the 'GitHub' 'API'.
+Description: Minimal client to interface with different 'REST' 'API'.
 License: MIT + file LICENSE
 LazyData: true
-URL: https://github.com/r-lib/gh#readme
-BugReports: https://github.com/r-lib/gh/issues
+URL: https://github.com/coatless/rest
+BugReports: https://github.com/coatless/rest/issues
 Suggests:
     covr,
     keyring,
@@ -21,6 +21,6 @@ Imports:
     ini,
     jsonlite,
     httr (>= 1.2)
-RoxygenNote: 7.0.2.9000
+RoxygenNote: 7.1.0
 Roxygen: { loadNamespace("roxygenlabs"); list(markdown = TRUE) }
 Encoding: UTF-8

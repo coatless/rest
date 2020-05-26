@@ -2,8 +2,9 @@
 % Please edit documentation in R/package.R
 \docType{package}
 \name{gh}
+\alias{rest}
+\alias{rest-package}
 \alias{gh}
-\alias{gh-package}
 \title{GitHub API}
 \usage{
 gh(
@@ -187,8 +188,8 @@ gh::gh(
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/r-lib/gh#readme}
-  \item Report bugs at \url{https://github.com/r-lib/gh/issues}
+  \item \url{https://github.com/coatless/rest}
+  \item Report bugs at \url{https://github.com/coatless/rest/issues}
 }
 
 
