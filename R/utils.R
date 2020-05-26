@@ -105,3 +105,10 @@ is_interactive <- function() {
     interactive()
   }
 }
+
+
+obfuscate <- function(x, first = 2, last = 0) {
+  paste0(substr(x, start = 1, stop = first),
+         "...",
+         substr(x, start = nchar(x) - last + 1, stop = nchar(x)))
+}
