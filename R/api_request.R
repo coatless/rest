@@ -101,7 +101,7 @@ rest_set_body <- function(x) {
 
 rest_set_headers <- function(x) {
   # x$api_url must be set properly at this point
-  auth <- rest_auth(x$token %||% rest_token(x$api_url))
+  auth <- rest_auth(x$token %||% api_token(x$api_url))
   send_headers <- rest_send_headers(x$accept, x$send_headers)
   x$headers <- c(send_headers, auth)
   x
