@@ -1,6 +1,6 @@
 
-extract_link <- function(gh_response, link) {
-  headers <- attr(gh_response, "response")
+extract_link <- function(rest_response, link) {
+  headers <- attr(rest_response, "response")
   links <- headers$link
   if (is.null(links)) {
     return(NA_character_)
@@ -24,36 +24,36 @@ extract_link <- function(gh_response, link) {
   }
 }
 
-gh_has <- function(gh_response, link) {
-  url <- extract_link(gh_response, link)
+rest_has <- function(rest_response, link) {
+  url <- extract_link(rest_response, link)
   !is.na(url)
 }
 
-gh_has_next <- function(gh_response) {
-  gh_has(gh_response, "next")
+rest_has_next <- function(rest_response) {
+  rest_has(rest_response, "next")
 }
 
-gh_link_request <- function(gh_response, link) {
+rest_link_request <- function(rest_response, link) {
 
-  stopifnot(inherits(gh_response, "gh_response"))
+  stopifnot(inherits(rest_response, "rest_response"))
 
-  url <- extract_link(gh_response, link)
+  url <- extract_link(rest_response, link)
   if (is.na(url)) throw(new_error("No ", link, " page"))
 
-  list(method = attr(gh_response, "method"),
+  list(method = attr(rest_response, "method"),
        url = url,
-       headers = attr(gh_response, ".send_headers"))
+       headers = attr(rest_response, ".send_headers"))
 
 }
 
-gh_link <- function(gh_response, link) {
-  req <- gh_link_request(gh_response, link)
-  raw <- gh_make_request(req)
-  gh_process_response(raw)
+rest_link <- function(rest_response, link) {
+  req <- rest_link_request(rest_response, link)
+  raw <- rest_make_request(req)
+  rest_process_response(raw)
 }
 
-gh_extract_pages <- function(gh_response) {
-  last <- extract_link(gh_response, "last")
+rest_extract_pages <- function(rest_response) {
+  last <- extract_link(rest_response, "last")
   if (grepl("&page=[0-9]+$", last)) {
     as.integer(sub("^.*page=([0-9]+)$", "\\1", last))
   }
@@ -69,38 +69,38 @@ gh_extract_pages <- function(gh_response) {
 #'
 #' If the requested page does not exist, an error is thrown.
 #'
-#' @param gh_response An object returned by a [gh()] call.
+#' @param rest_response An object returned by a [gh()] call.
 #' @return Answer from the API.
 #'
 #' @seealso The `.limit` argument to [gh()] supports fetching more than
 #'   one page.
 #'
-#' @name gh_next
+#' @name rest_next
 #' @export
 #' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
 #' x <- gh("/users")
 #' vapply(x, "[[", character(1), "login")
-#' x2 <- gh_next(x)
+#' x2 <- rest_next(x)
 #' vapply(x2, "[[", character(1), "login")
 
-gh_next <- function(gh_response) gh_link(gh_response, "next")
+rest_next <- function(rest_response) rest_link(rest_response, "next")
 
-#' @name gh_next
+#' @name rest_next
 #' @export
 
-gh_prev <- function(gh_response) gh_link(gh_response, "prev")
+rest_prev <- function(rest_response) rest_link(rest_response, "prev")
 
-#' @name gh_next
+#' @name rest_next
 #' @export
 
-gh_first <- function(gh_response) gh_link(gh_response, "first")
+rest_first <- function(rest_response) rest_link(rest_response, "first")
 
-#' @name gh_next
+#' @name rest_next
 #' @export
 
-gh_last <- function(gh_response) gh_link(gh_response, "last")
+rest_last <- function(rest_response) rest_link(rest_response, "last")
 
-make_progress_bar <- function(gh_request) {
+make_progress_bar <- function(rest_request) {
   state <- new.env(parent = emptyenv())
   state$pageno <- 0L
   state$got <- 0L
@@ -108,10 +108,10 @@ make_progress_bar <- function(gh_request) {
   state
 }
 
-update_progress_bar <- function(state, gh_response) {
+update_progress_bar <- function(state, rest_response) {
   state$pageno <- state$pageno + 1L
-  state$got <- state$got + length(gh_response)
-  state$pages <- gh_extract_pages(gh_response) %||% state$pages
+  state$got <- state$got + length(rest_response)
+  state$pages <- rest_extract_pages(rest_response) %||% state$pages
 
   if (is.null(state$status)) {
     state$status <- cli_status(
