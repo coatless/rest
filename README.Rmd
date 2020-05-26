@@ -22,3 +22,4 @@ contained in [`gh`](https://github.com/r-lib/gh) by
 [Gábor Csárdi](https://github.com/gaborcsardi),
 [Jennifer (Jenny) Bryan](https://github.com/jennybc), and 
 [Hadley Wickham](https://github.com/hadley).
+
