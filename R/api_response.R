@@ -1,13 +1,13 @@
-gh_process_response <- function(response) {
+rest_process_response <- function(response) {
   stopifnot(inherits(response, "response"))
   if (status_code(response) >= 300) {
-    gh_error(response)
+    rest_error(response)
   }
 
   content_type <- http_type(response)
-  gh_media_type <- headers(response)[["x-github-media-type"]]
+  rest_media_type <- headers(response)[["x-github-media-type"]]
   is_raw <- content_type == "application/octet-stream" ||
-    isTRUE(grepl("param=raw$", gh_media_type, ignore.case = TRUE))
+    isTRUE(grepl("param=raw$", rest_media_type, ignore.case = TRUE))
   is_ondisk <- inherits(response$content, "path")
   if (is_ondisk) {
     res <- response$content
@@ -29,24 +29,24 @@ gh_process_response <- function(response) {
   attr(res, "response") <- headers(response)
   attr(res, ".send_headers") <- response$request$headers
   if (is_ondisk) {
-    class(res) <- c("gh_response", "path")
+    class(res) <- c("rest_response", "path")
   } else if (is_raw) {
-    class(res) <- c("gh_response", "raw")
+    class(res) <- c("rest_response", "raw")
   } else {
-    class(res) <- c("gh_response", "list")
+    class(res) <- c("rest_response", "list")
   }
   res
 }
 
 ## https://developer.github.com/v3/#client-errors
-gh_error <- function(response, call = sys.call(-1)) {
+rest_error <- function(response, call = sys.call(-1)) {
   heads <- headers(response)
   res <- content(response)
   status <- status_code(response)
 
   msg <- c(
     "",
-    paste0("GitHub API error (", status, "): ", heads$status),
+    paste0("REST API error (", status, "): ", heads$status),
     paste0("Message: ", res$message)
   )
 
@@ -77,7 +77,7 @@ gh_error <- function(response, call = sys.call(-1)) {
     message = paste0(msg, collapse = "\n")
   ),
   class = c(
-    "github_error",
+    "api_error",
     paste0("http_error_", status),
     "error",
     "condition"

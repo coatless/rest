@@ -17,3 +17,9 @@ knitr::opts_chunk$set(
 
 Minimalistic client to interface _R_ with REST APIs.
 
+This is an experimental package that builds heavily ontop of the fantastic work
+contained in [`gh`](https://github.com/r-lib/gh) by 
+[Gábor Csárdi](https://github.com/gaborcsardi),
+[Jennifer (Jenny) Bryan](https://github.com/jennybc), and 
+[Hadley Wickham](https://github.com/hadley).
+

@@ -1,13 +1,13 @@
 
-#' GitHub API
+#' REST API Access
 #'
-#' Minimal wrapper to access GitHub's API.
+#' Minimal wrapper to work with REST APIs.
 #'
 #' @docType package
-#' @name gh
+#' @name rest
 "_PACKAGE"
 
-#' Query the GitHub API
+#' Query REST API's on the Web
 #'
 #' This is an extremely minimal client. You need to know the API
 #' to be able to use this client. All this function does is:
@@ -19,11 +19,11 @@
 #'   body, as JSON.
 #' * Convert the response to an R list using [jsonlite::fromJSON()].
 #'
-#' @param endpoint GitHub API endpoint. Must be one of the following forms:
+#' @param endpoint API endpoint. Must be one of the following forms:
 #'    * `METHOD path`, e.g. `GET /rate_limit`,
 #'    * `path`, e.g. `/rate_limit`,
-#'    * `METHOD url`, e.g. `GET https://api.github.com/rate_limit`,
-#'    * `url`, e.g. `https://api.github.com/rate_limit`.
+#'    * `METHOD url`, e.g. `GET https://api.domain.com/v1/rate_limit`,
+#'    * `url`, e.g. `https://api.domain.com/v1/rate_limit`.
 #'
 #'    If the method is not supplied, will use `.method`, which defaults
 #'    to `"GET"`.
@@ -44,7 +44,7 @@
 #'   existing file.  Defaults to FALSE.
 #' @param .token Authentication token. Defaults to `GITHUB_PAT` or
 #'   `GITHUB_TOKEN` environment variables, in this order if any is set.
-#'   See [gh_token()] if you need more flexibility, e.g. different tokens
+#'   See [rest_token()] if you need more flexibility, e.g. different tokens
 #'   for different GitHub Enterprise deployments.
 #' @param .api_url Github API url (default: <https://api.github.com>). Used
 #'   if `endpoint` just contains a path. Defaults to `GITHUB_API_URL`
@@ -71,7 +71,7 @@
 #' @param .progress Whether to show a progress indicator for calls that
 #'   need more than one HTTP request.
 #'
-#' @return Answer from the API as a `gh_response` object, which is also a
+#' @return Answer from the API as a `rest_response` object, which is also a
 #'   `list`. Failed requests will generate an R error. Requests that
 #'   generate a raw response will return a raw vector.
 #'
@@ -80,85 +80,9 @@
 #' @importFrom jsonlite fromJSON toJSON
 #' @importFrom utils URLencode capture.output
 #' @importFrom cli cli_status cli_status_update
+#'
 #' @export
-#' @seealso [gh_gql()] if you want to use the GitHub GraphQL API,
-#' [gh_whoami()] for details on GitHub API token management.
-#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
-#' ## Repositories of a user, these are equivalent
-#' gh("/users/hadley/repos")
-#' gh("/users/:username/repos", username = "hadley")
-#'
-#' ## Starred repositories of a user
-#' gh("/users/hadley/starred")
-#' gh("/users/:username/starred", username = "hadley")
-#'
-#' @examplesIf FALSE
-#' ## Create a repository, needs a token in GITHUB_PAT (or GITHUB_TOKEN)
-#' ## environment variable
-#' gh("POST /user/repos", name = "foobar")
-#'
-#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
-#' ## Issues of a repository
-#' gh("/repos/hadley/dplyr/issues")
-#' gh("/repos/:owner/:repo/issues", owner = "hadley", repo = "dplyr")
-#'
-#' ## Automatic pagination
-#' users <- gh("/users", .limit = 50)
-#' length(users)
-#'
-#' @examplesIf FALSE
-#' ## Access developer preview of Licenses API (in preview as of 2015-09-24)
-#' gh("/licenses") # used to error code 415
-#' gh("/licenses", .accept = "application/vnd.github.drax-preview+json")
-#'
-#' @examplesIf FALSE
-#' ## Access Github Enterprise API
-#' ## Use GITHUB_API_URL environment variable to change the default.
-#' gh("/user/repos", type = "public", .api_url = "https://github.foobar.edu/api/v3")
-#'
-#' @examplesIf FALSE
-#' ## Use I() to force body part to be sent as an array, even if length 1
-#' ## This works whether assignees has length 1 or > 1
-#' assignees <- "gh_user"
-#' assignees <- c("gh_user1", "gh_user2")
-#' gh("PATCH /repos/OWNER/REPO/issues/1", assignees = I(assignees))
-#'
-#' @examplesIf FALSE
-#' ## There are two ways to send JSON data. One is that you supply one or
-#' ## more objects that will be converted to JSON automatically via
-#' ## jsonlite::toJSON(). In this case sometimes you need to use
-#' ## jsonlite::unbox() because fromJSON() creates lists from scalar vectors
-#' ## by default. The Content-Type header is automatically added in this
-#' ## case. For example this request turns on GitHub Pages, using this
-#' ## API: https://developer.github.com/v3/repos/pages/#enable-a-pages-site
-#'
-#' gh::gh(
-#'   "POST /repos/:owner/:repo/pages",
-#'   owner = "gaborcsardi",
-#'   repo = "playground",
-#'   source = list(
-#'     branch = jsonlite::unbox("master"),
-#'     path = jsonlite::unbox("/docs")
-#'   ),
-#'   .send_headers = c(Accept = "application/vnd.github.switcheroo-preview+json")
-#' )
-#'
-#' ## The second way is to handle the JSON encoding manually, and supply it
-#' ## as a raw vector in an unnamed argument, and also a Content-Type header:
-#'
-#' body <- '{ "source": { "branch": "master", "path": "/docs" } }'
-#' gh::gh(
-#'   "POST /repos/:owner/:repo/pages",
-#'   owner = "gaborcsardi",
-#'   repo = "playground",
-#'   charToRaw(body),
-#'   .send_headers = c(
-#'     Accept = "application/vnd.github.switcheroo-preview+json",
-#'     "Content-Type" = "application/json"
-#'   )
-#' )
-
-gh <- function(endpoint, ..., per_page = NULL, .token = NULL, .destfile = NULL,
+rest <- function(endpoint, ..., per_page = NULL, .token = NULL, .destfile = NULL,
                .overwrite = FALSE, .api_url = NULL, .method = "GET",
                .limit = NULL, .accept = "application/vnd.github.v3+json",
                .send_headers = NULL, .progress = TRUE) {
@@ -177,7 +101,7 @@ gh <- function(endpoint, ..., per_page = NULL, .token = NULL, .destfile = NULL,
     params <- c(params, list(per_page = per_page))
   }
 
-  req <- gh_build_request(endpoint = endpoint, params = params,
+  req <- rest_build_request(endpoint = endpoint, params = params,
                           token = .token, destfile = .destfile,
                           overwrite = .overwrite, accept = .accept,
                           send_headers = .send_headers,
@@ -185,13 +109,13 @@ gh <- function(endpoint, ..., per_page = NULL, .token = NULL, .destfile = NULL,
 
   if (.progress) prbr <- make_progress_bar(req)
 
-  raw <- gh_make_request(req)
+  raw <- rest_make_request(req)
 
-  res <- gh_process_response(raw)
+  res <- rest_process_response(raw)
 
-  while (!is.null(.limit) && length(res) < .limit && gh_has_next(res)) {
+  while (!is.null(.limit) && length(res) < .limit && rest_has_next(res)) {
     update_progress_bar(prbr, res)
-    res2 <- gh_next(res)
+    res2 <- rest_next(res)
     res3 <- c(res, res2)
     attributes(res3) <- attributes(res2)
     res <- res3
@@ -206,7 +130,7 @@ gh <- function(endpoint, ..., per_page = NULL, .token = NULL, .destfile = NULL,
   res
 }
 
-gh_make_request <- function(x) {
+rest_make_request <- function(x) {
 
   method_fun <- list("GET" = GET, "POST" = POST, "PATCH" = PATCH,
                      "PUT" = PUT, "DELETE" = DELETE)[[x$method]]
